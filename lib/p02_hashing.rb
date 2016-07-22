@@ -1,8 +1,8 @@
 class Fixnum
   # Fixnum#hash already implemented for you
-  def hash
-    (self * 23) % 8
-  end
+  # def hash
+  #   (self * 23) % 8
+  # end
 
 end
 
@@ -13,10 +13,10 @@ class Array
       if el.is_a?(Array)
         arr << 654
       else
-        arr << ((el * 23 + idx) % 8)
+        arr << ((el.hash))
       end
     end
-    arr.inject(:*)
+    arr.inject(:+)
   end
 end
 
@@ -24,9 +24,9 @@ class String
   def hash
     arr = [43]
     self.chars.each_with_index do |let, idx|
-      arr << ((let.ord * 5 + idx) + self.length % 4)
+      arr << ((let.ord.hash))
     end
-    arr.inject(:*)
+    arr.inject(:+)
   end
 end
 
@@ -36,7 +36,7 @@ class Hash
   def hash
     arr = [43]
     self.each do |key, val|
-      arr << ((val.ord * 5 + key.to_s.ord) + self.keys.length % 4)
+      arr << ((val.ord.hash))
     end
     arr.inject(:*)
   end

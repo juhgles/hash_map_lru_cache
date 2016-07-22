@@ -13,9 +13,19 @@ class HashMap
   end
 
   def set(key, val)
+    hashed_key = hash_key(key)
+    @store[hashed_key].insert(key,val)
+  end
+
+  def hash_key(key)
+    hashed_key = key.hash % num_buckets
   end
 
   def get(key)
+    hashed_key = hash_key(key)
+    p "hashed key: #{hashed_key}"
+    bucket = @store[hashed_key]
+    bucket.get(key)
   end
 
   def delete(key)
