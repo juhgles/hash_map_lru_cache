@@ -15,11 +15,12 @@ end
 
 class LinkedList
   include Enumerable
-  attr_accessor :active_link, :length
 
   def initialize
-    @length = 0
-    @active_link = Link.new
+    @head = Link.new
+    @tail = Link.new
+    @head.next = @tail
+    @tail.prev = @head
   end
 
   def [](i)
@@ -28,86 +29,61 @@ class LinkedList
   end
 
   def first
-    return nil if empty?
-    active_link = @active_link
-    active_link = active_link.prev until active_link.prev.nil?
-    active_link
+    empty? ? nil : @head.next
   end
 
   def last
-    return nil if empty?
-    active_link = @active_link
-    active_link = active_link.next until active_link.next.nil?
-    active_link
+    empty? ? nil : @tail.prev
   end
 
   def empty?
-    @length == 0
+    @head.next == @tail
   end
 
   def get(key)
-    @active_link = first
-    return nil unless include?(key)
-    until @active_link.key == key
-      @active_link = @active_link.next
-    end
-    return @active_link.val
-  end
-
-  def get_link(key)
-    @active_link = first
-    return nil unless include?(key)
-    until @active_link.key == key
-      @active_link = @active_link.next
-    end
-    return @active_link
+    each { |link| return link.val if link.key == key }
+    nil
   end
 
   def include?(key)
-    if @length > 0
-      @active_link = first
-      until @active_link.nil?
-        return true if @active_link.key == key
-        @active_link = @active_link.next
-      end
-    end
-    false
+    any? { |link| link.key == key }
   end
 
   def insert(key, val)
+    each { |link| return link.val = val if link.key == key }
+
     new_link = Link.new(key, val)
-    if @active_link.key.nil?
-      @active_link = new_link
-    else
-      @active_link.next = new_link
-      new_link.prev = @active_link
-      @active_link = new_link
-    end
-    @length += 1
+
+    @tail.prev.next = new_link
+    new_link.prev = @tail.prev
+    new_link.next = @tail
+    @tail.prev = new_link
+
+    new_link
   end
 
   def remove(key)
-    to_remove = get_link(key)
-    @length -= 1
-    prev_link = to_remove.prev
-    next_link = to_remove.next
-    to_remove.next = nil
-    to_remove.prev = nil
-    prev_link.next = next_link unless prev_link.nil?
-    next_link.prev = prev_link unless next_link.nil?
-    prev_link ? @active_link = prev_link : @active_link = next_link
+    each do |link|
+      if link.key == key
+        link.prev.next = link.next
+        link.next.prev = link.prev
+        link.next, link.prev = nil, nil
+        return link.val
+      end
+    end
+
+    nil
   end
 
   def each
-    @active_link = first
-    until @active_link.nil?
-      yield(@active_link)
-      @active_link = @active_link.next
+    current_link = @head.next
+    until current_link == @tail
+      yield current_link
+      current_link = current_link.next
     end
   end
 
-  # uncomment when you have `each` working and `Enumerable` included
-  # def to_s
-  #   inject([]) { |acc, link| acc << "[#{link.key}, #{link.val}]" }.join(", ")
-  # end
+  def to_s
+    inject([]) { |acc, link| acc << "[#{link.key}, #{link.val}]" }.join(", ")
+  end
 end

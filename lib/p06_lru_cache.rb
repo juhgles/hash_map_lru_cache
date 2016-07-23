@@ -1,4 +1,4 @@
-require_relative 'p05_hash_map'
+require_relative 'p05_hash_map_solution.rb'
 require_relative 'p04_linked_list'
 
 class LRUCache
@@ -15,6 +15,17 @@ class LRUCache
   end
 
   def get(key)
+    if @map.include?(key)
+      #do something
+    else
+      call_proc = @prc.call(key)
+      if @map.count == @max
+        @map.delete(@store.first.key)
+      end
+      @map.set(key,call_proc)
+      @store.insert(key,call_proc)
+      call_proc
+    end
   end
 
   def to_s

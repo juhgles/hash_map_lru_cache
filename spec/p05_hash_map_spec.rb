@@ -1,5 +1,5 @@
 require 'rspec'
-require 'p05_hash_map'
+require 'p05_hash_map_solution'
 
 describe HashMap do
   let(:hash) do
